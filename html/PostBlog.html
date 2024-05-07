@@ -1,0 +1,229 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <title>Document</title>
+    <style>
+                  nav{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .profile{
+            display: flex;
+            align-items: center;
+        }
+        #show1{
+            text-align: center;
+            color: blue;
+            /* margin-top: 30px; */
+        }
+        #logout{
+              padding: 5px 15px;
+              background-color: blue;
+              color: white;
+              border: thick solid white;
+              border-radius: 8px;
+        }
+
+input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit] {
+  width: 100%;
+  background-color: #FFB6C1;
+  color: black;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+input[type=submit]:hover {
+  background-color: #ada5a6;
+}
+
+div {
+  border-radius: 5px;
+  background-color: #EAEAEA;
+  padding: 20px;
+  width: 60%;
+  margin: auto;
+}
+#hello{
+    color: red;
+}
+.loader {
+        border: 10px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 10px solid black;
+        width: 70px;
+        height: 70px;
+        -webkit-animation: spin .7s linear infinite; /* Safari */
+        animation: spin .7s linear infinite;
+        margin: 300px auto;
+      }
+      
+      /* Safari */
+      @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      #load{
+        width: 100%;
+        height: 100vh;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.404);
+      }
+
+    @media(max-width:500px){
+        div {
+  border-radius: 5px;
+  background-color: #EAEAEA;
+  padding: 20px;
+  width: 90%;
+  margin: auto;
+}
+    }
+    </style>
+</head>
+<body style="position: relative;">
+    <div id="load" hidden>
+        <div class="loader"></div>
+    </div>
+    <h3 style="text-align: center; margin-top: 50px; margin-bottom: 20px;">UpLoad BLogs</h3>
+    <div>
+        <form name="allBlogs">
+          <label for="blogname">Tite</label>
+          <input type="text" id="title" name="title" placeholder="blog name..">
+
+          <label for="head">Description</label>
+          <input type="text" id="des" name="des" placeholder="Your Description">
+
+          <label for="head">Image</label><br>
+          <input type="file" id="file" name="file" placeholder="Your Image"><br><br>
+        
+          <input type="submit" value="Submit">
+        </form>
+      </div>
+</body>
+
+<script type="module">
+
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+   import { getFirestore, collection, getDocs, getDoc, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCFTTtUQh92vo97kscp8k8VRUnmymdZb5k",
+    authDomain: "cleanbay-e7e4e.firebaseapp.com",
+    projectId: "cleanbay-e7e4e",
+    storageBucket: "cleanbay-e7e4e.appspot.com",
+    messagingSenderId: "254937873244",
+    appId: "1:254937873244:web:71185365c73f07b16b9f99"
+  };
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            // const apps = initializeApp(firebaseConfig);
+            const auth = getAuth(app)
+            const  db = getFirestore(app)
+            const colRef = collection(db, 'user')
+            const storage = getStorage(app)
+            const blogRef = collection(db, 'Blog')
+            // const colRef = collection()
+            let userss = ""
+            let myArray = []
+            let date = new Date()
+            let m = date.getMonth() + 1
+            let d = date.getDate()
+            let y = date.getFullYear()
+            let recentDate = `${d}/${m}/${y}`
+            console.log(recentDate, 'djdf');
+            let mail;
+    
+
+            onAuthStateChanged(auth, (user)=>{
+                        if (user) {
+                        
+                        mail = user.email;
+                        console.log(mail); 
+                        }
+
+                        })
+
+            // async function logoutUser() {
+            //     try {
+            //         await signOut(auth)
+            //         alert('user log out')
+                    
+            //     } catch (error) {
+            //         console.log(error.message);
+            //     }
+
+        
+            // loginForm.addEventListener('submit', login)
+            // window.addEventListener('load', checkAuthStatus)
+            // logout.addEventListener('click', logoutUser)
+            
+           async function addALLBlogs(e) {
+               load.hidden = false
+                e.preventDefault();
+                 const title = allBlogs.title.value
+                 const des = allBlogs.des.value
+                 const file = allBlogs.file.files[0]
+                 const random = Math.floor(Math.random() * 123)
+                //  const userr = user
+                 console.log({title,  des, file, });
+                try {
+                    const storageRef = ref(storage, 'images/' + (file.name + random))
+                    const imRef = await uploadBytes(storageRef, file)
+                    console.log(imRef);
+                    const downloadURL = await getDownloadURL(storageRef)
+                     console.log(downloadURL);
+                    //  save download
+                    const saveBloagRef = await addDoc(blogRef, {title,  des,
+                    image: downloadURL, date: recentDate, mail  })
+                    // alert('succesFully')
+                    setTimeout(() => {
+                        window.location.href = "../html/blog.html"
+                    }, 3000);
+                    
+                } catch (err) {
+                    console.log(err);
+                    // load1.hidden = false
+                }
+                finally{
+                    load.hidden = true
+                }
+
+            }
+
+        allBlogs.addEventListener('submit', addALLBlogs)
+             
+
+
+            </script>
+
+</html>

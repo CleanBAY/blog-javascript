@@ -1,0 +1,192 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read More</title>
+    <link rel="stylesheet" href="../css file/readMore.css">
+</head>
+<body style="background-color: #EAEAEA;">
+    <div id="load" hidden>
+        <div class="loader"></div>
+    </div>
+    <nav>
+        <p class="app" id="appssl">Post Blog</p>
+        <div class="classDiv">
+          <p id="usermail"></p>
+          <button class="but1" id="signOutBTN">LogOut</button>
+        </div>
+      </nav>
+
+
+      <section class="section1">
+        <div id="seeMore">
+       <!-- <p>FEATURED</p>
+       <h2 class="title1">Reviewing the Latest Beauty Innovations in 2023</h2>
+       <img src="../image/Image.png" alt="" class="imgg">
+       <p class="des">As we step into a new era, the beauty industry continues to evolve with groundbreaking innovations that redefine skincare, makeup, and self-care practices. In this review, we'll explore the cutting-edge beauty products and technologies that are set to make waves in 2023, promising to elevate our beauty routines to new heights.</p> -->
+      </div>
+      </section>
+    
+    
+</body>
+
+
+
+
+
+<script type="module" >
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";    
+// import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js'
+
+import { getFirestore, collection, getDocs, getDoc, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
+
+
+let signOutBTN = document.getElementById('signOutBTN')
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCFTTtUQh92vo97kscp8k8VRUnmymdZb5k",
+  authDomain: "cleanbay-e7e4e.firebaseapp.com",
+  projectId: "cleanbay-e7e4e",
+  storageBucket: "cleanbay-e7e4e.appspot.com",
+  messagingSenderId: "254937873244",
+  appId: "1:254937873244:web:71185365c73f07b16b9f99"
+};
+
+const queryString = window.location.search
+const urlParam = new URLSearchParams(queryString);
+const blogId = urlParam.get('id');
+
+
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app)
+const db = getFirestore(app);
+const colRef = doc(db, 'Blog', blogId)
+const collRef = collection(db, 'Blog')
+console.log(blogId);
+let AllBlogs = [];
+let hold;
+let users;
+
+
+
+
+
+onAuthStateChanged(auth, (user)=>{
+  if (user) {
+  console.log(user); 
+  users = user.email;
+  usermail.innerText =  user.email
+  }
+  else{
+      console.log('No one is signed in');
+  greeting.innerText = `Hello, Guest`;
+
+  }
+})
+
+async function getSingleBlog() {
+    load.hidden = false
+    try {
+        const res = await getDoc(colRef)
+    const data = res.data();
+    console.log(res.data());
+   
+
+    if (data) {
+        seeMore.innerHTML = `
+        <p>FEATURED</p>
+       <h2 class="title1">${data.title}</h2>
+       <img src="${data.image}" alt="" class="imgg">
+       <p class="des">${data.des}</p>
+       
+        `
+        if (data.mail == usermail.innerText) {
+         seeMore.innerHTML += `<button id="${data.id}" class="btn">Delete Blog</button>`
+     }
+    }
+    } catch (error) {
+        console.log(error);
+    }finally{
+        load.hidden = true;
+    }
+ 
+    getAllBtn()
+    // getAllBlogs()
+}
+
+
+// async function getAllBlogs(){
+
+//   try {
+//     const res = await getDocs(collRef)
+//     res.forEach((blog)=>{
+//       // console.log(blog.data(), blog.id);
+ 
+//       AllBlogs.push({...blog.data(), id:blog.id});
+//     })
+//     // displayAllBlogs()
+//    console.log(AllBlogs);
+//    AllBlogs.forEach((ele)=>{
+//     if (ele.mail ==  usermail.innerText) {
+//         console.log('kdkdj');
+//     }
+//     // console.log(hold);
+//    })
+//   } catch (error) {
+//     console.log(error);
+//   }
+
+//  }
+      
+
+
+const deleteBlog = async (id) =>{
+  
+
+    const docRef = doc(db, 'Blog', blogId)
+    await deleteDoc(docRef)
+    alert('delete successfully')
+       window.location.href = "./blog.html"
+}
+
+const getAllBtn = () => {
+    const btns = document.querySelectorAll('.btn')
+    btns.forEach((btn) => {
+        btn.addEventListener('click', (e) =>{
+            console.log('hello');
+            deleteBlog(e.target.id);
+            getSingleBlog()
+        })
+    })
+}
+
+
+
+getSingleBlog()
+
+
+
+function navgat() {
+  window.location.href = "./PostBlog.html"
+  alert('hello world')
+}
+
+signOutBTN.addEventListener("click", async () => {
+  // alert('hi')
+  try {
+    const signOutTask = await signOut(auth);
+    // console.log(signOutTask);
+    console.log("user has been signed out");
+    window.location.href = "../logIn.html";
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
+
+appssl.addEventListener('click', navgat)
+</script>
+</html>

@@ -1,0 +1,90 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <link rel="stylesheet" href="./css file/login.css">
+</head>
+<body>
+  <div id="load" hidden>
+    <div class="loader"></div>
+</div>
+    <section class="section1">
+      <div class="imgp">
+        <img src="./image/Hero Image.png" alt="" >
+      </div>
+      <div>
+        <form name="loginUser">
+          <div class="imgcontainer">
+            <img src="./image/logo.PNG" alt="Avatar" class="avatar">
+          </div>
+        
+          <div class="container">
+            <label for="uname"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" name="email" required>
+        
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password" required>
+                
+            <button type="submit">Login</button>
+     
+          </div>
+          <p style="text-align: center; padding-bottom: 20px; color: red    ;" id="ifError"></p>
+        
+          <div class="container" style="background-color:#f1f1f1">
+            <button type="button" class="cancelbtn">Cancel</button>
+            <span class="psw">Sign <a href="/html/sign Up.html">Up</a></span>
+          </div>
+        </form>
+        
+      </div>
+    </section>
+</body>
+
+<script type="module">
+ 
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+  // TODO: Add SDKs for Firebase products th  at you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCFTTtUQh92vo97kscp8k8VRUnmymdZb5k",
+    authDomain: "cleanbay-e7e4e.firebaseapp.com",
+    projectId: "cleanbay-e7e4e",
+    storageBucket: "cleanbay-e7e4e.appspot.com",
+    messagingSenderId: "254937873244",
+    appId: "1:254937873244:web:71185365c73f07b16b9f99"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+
+ async function signupUserWithEmail(e) {
+      e.preventDefault();
+      const email = loginUser.email.value
+      const password = loginUser.password.value
+       load.hidden = false
+      try {
+          const userCredentials = await signInWithEmailAndPassword(auth, email, password)
+          window.location.href = './html/blog.html'
+          alert('you log in succefully')
+      } catch (error) {
+          console.log(error);
+          ifError.innerHTML = error.message.slice(9, 80)
+      } finally{
+       load.hidden = true}
+      
+  }
+
+
+
+
+
+  loginUser.addEventListener('submit', signupUserWithEmail)
+</script>
+</html>
